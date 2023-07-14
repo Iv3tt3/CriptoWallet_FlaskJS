@@ -1,0 +1,45 @@
+/* Estilos para header y footer*/
+
+header, footer{
+    background-color: #23695c;
+}
+
+header h1{
+    color:white;
+    font-weight: bold;
+    text-align:center;
+}
+
+footer p{
+    color:white;
+    font-weight: bold;
+    text-align:center;
+}
+
+/* Estilo para navegacion */
+
+#navitem1, #navitem2, #navitem4 {
+    margin-top: 20pt;
+    width: 20%;
+    text-align: center;
+  }
+
+#navitem3 {
+    margin-top: 20pt;
+    width: 40%;
+  }
+
+.navlink:hover { 
+    background-color:  #3796854f;;
+    background-size: 100pt;
+    color: white;
+  }
+
+/* Estilos para el enlace inactivo */
+.noactive {
+    --primary: grey;
+    cursor: not-allowed;
+    pointer-events: none;
+    background-color: rgba(211, 211, 211, 0.287);
+    border-bottom: 1px solid black;
+  }

@@ -1,0 +1,28 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/pico.css"> 
+    <link rel="stylesheet" href="/static/css/style.css">
+    <title>Cripto Wallet - {{ page }}</title>
+    <script src="/static/js/app.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Cripto Wallet - {{ page }}</h1>
+   </header> 
+   <nav class="container">
+    <div {% if actual_page == "index" %} class="noactive" {% else%} class="navlink"{% endif %} id="navitem1"><a href="/">All transactions</a></div>
+    <div {% if actual_page =="form_new" %} class="noactive" {% else%} class="navlink"{% endif %} id="navitem2"><a href="">New transaction</a></div>
+    <div id="navitem3"></div>
+    <div {% if actual_page =="status" %} class="noactive" {% else%} class="navlink"{% endif %} id="navitem4"><a href="">Wallet Status</a></div>
+</nav>
+<main class="container">
+    {% block content %}{% endblock %}
+</main>
+<footer>
+    <p>&copy; Iv3tt3 2023</p>
+</footer>
+
+</body>
+</html>
