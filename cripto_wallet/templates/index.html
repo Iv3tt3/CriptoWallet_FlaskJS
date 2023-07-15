@@ -3,15 +3,19 @@
 {% block content%}
 
     <main>
-        <table id="transactions_table">
-            <tr>
-                <th>Date</th>
-                <th>Time</th>
-                <th>FROM</th>
-                <th>Amount (From)</th>
-                <th>TO</th>
-                <th>Amount (To)</th>
-            </tr> 
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>FROM</th>
+                    <th>Amount (From)</th>
+                    <th>TO</th>
+                    <th>Amount (To)</th>
+                </tr> 
+            </thead>
+            <tbody id="transactions_table"> <!-- id used in JS to display transactions -->
+            </tbody>
         </table>
     </main>
 
