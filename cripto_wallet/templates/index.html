@@ -3,7 +3,8 @@
 {% block content%}
 
     <main>
-        <table>
+        <!-- TRANSACTIONS TABLE -->
+        <table> 
             <thead>
                 <tr>
                     <th>Date</th>
@@ -17,6 +18,88 @@
             <tbody id="transactions_table"> <!-- id used in JS to display transactions -->
             </tbody>
         </table>
+
+
+        <!-- NEW TRANSACTION SECTION -->
+        <div>
+
+            <!-- New transactionn and Cancel button -->
+            <div class="grid-container">
+                <div><a href="#" id="new_btn" role="button">New transaction</a>
+                </div>
+                <div><a href="#" id="cancel_btn" role="button" class="invisible">Cancel</a>
+                </div>
+            </div>
+
+            <div class="grid-container" style="border:1px solid lightgrey;">
+
+                <!-- New transaction form -->
+
+                <div class="invisible" id="new_transaction_grid"> 
+                    <div class="grid-item">
+                        <p style="font-size: 20pt;font-weight: bold;text-align: center;">Calculator</p>
+                        <form >
+                            <label for="Amount_From">Amount:</label>
+                            <span class="description"><em>Amount you want to invest</em></span>
+                            <input type="number" name="Amount_From" id="Amount_From" placeholder="0.00"></br>
+                            
+                            <label for="From_Coin">From:</label>
+                            <span class="description"><em>Coin you want to sell</em></span>
+                            <select name="From_Coin" id="From_Coin" placeholder="From"> 
+                            </select><br>    
+
+                            <label for="To_Coin">To:</label>
+                            <span class="description"><em>Coin you want to buy</em></span>
+                            <select name="To_Coin" id="To_Coin" placeholder="To">
+                            </select><br>
+
+                            <input type="submit" name="submit" id="submit" value="Calcular">
+                    </div>
+                </div>
+
+                <!-- Results & Create an order -->
+                
+                <div class="invisible" id="results_grid">
+                    <div class="grid-item" style="background-color: rgba(246, 246, 246, 0.743);border-radius: 10pt;">
+                        
+                        <div id="results">
+                            <p style="font-size: 20pt;font-weight: bold;text-align: center;">Result</p>
+                            <p style="margin-bottom: 0;"><b>Current rate:</b></p>
+                            <div id="result_rate">
+                            </div>
+                            <p style="margin-bottom: 0;"><b>Amount you will get:</b></p>
+                            <div id="result_amount">
+                            </div>
+                            <input type="button" name="order" id="order" value="Create an order">
+                        </div>
+
+                        <div class="invisible" id="purchase">
+                            <div style="background-color: #23695c;padding-top: 20pt;border-radius: 10pt;margin-top: 10pt;">
+                                <p style="font-size: 20pt;font-weight: bold;text-align: center;color: white;">Ready to Purchase?</p>
+                                <div style="border: 5pt solid #23695c;border-radius: 10pt; background-color: white ;padding: 20pt;">
+                                    <p style="font-weight: bold;text-align: center; background-color: rgba(246, 246, 246, 0.743);">Order resume:</p>
+                                    <div style="padding-left: 20pt;text-align: left;">
+                                        <p><b>From </b><em>(investing amount)</em></p>
+                                        <div id="purchase_from"></div>
+                                        <p><b>To </b><em>(purchasing amount)</em></p>
+                                        <div id="purchase_to"></div>
+                                    </div>
+                                    <input type="button" name="purchase" id="purchase" value="Purchase">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div> 
+
+        </div>
+
+
+        <!-- STATUS SECTION -->
+
+        
     </main>
 
 {% endblock %}

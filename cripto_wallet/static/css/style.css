@@ -43,3 +43,48 @@ footer p{
     background-color: rgba(211, 211, 211, 0.287);
     border-bottom: 1px solid black;
   }
+
+
+/* Estilos para botones */
+
+#new_btn{
+  width: 100%;
+}
+#cancel_btn{
+  width: 100%;
+}
+
+.inactiveButton {
+  --primary: rgb(189, 189, 189);
+  cursor: not-allowed;
+  color: grey;
+  pointer-events: none;
+  background-color: rgba(211, 211, 211, 0.287);
+}
+
+/* Estilos para el new_form grid */
+.grid-container{
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+
+.grid-item {
+  margin: 20pt;
+  padding: 20pt;
+  background-color: rgba(246, 246, 246, 0.743);
+  border-radius: 10pt
+}
+
+/* Estilos para el new transaction form */
+.description {
+  color:grey;
+  font-size: 90%;
+}
+
+/* clase invisible */
+
+.invisible{
+  display: none;
+}
+
+

@@ -1,4 +1,62 @@
 import sqlite3
+import requests
+from cripto_wallet import app
+
+coin_options = [("option","Select an option"),
+         ("EUR","EUR"),
+         ("BTC","BTC"), 
+         ("BNB","BNB"),
+         ("ETH","ETH"),
+         ("USDT","USDT"),
+         ("XRP","XRP"),
+         ("ADA","ADA"),
+         ("SOL","SOL"),
+         ("DOT","DOT"),
+         ("MATIC","MATIC")]
+
+
+class Calculs:
+    def __init__(self):
+        self.coinFrom = ""
+        self.coinTo = ""
+        self.rate = ""
+        self.amountFrom = ""
+        self.amountTo = ""
+    
+    def get_rate(self, From_Coin, To_Coin, Amount_From):
+        apikey = app.config.get("COIN_IO_API_KEY")
+        url = f"https://rest.coinapi.io/v1/exchangerate/{From_Coin}/{To_Coin}?apikey={apikey}"
+        try: 
+            consult_response = requests.get(url)
+            data = consult_response.json() 
+            if consult_response.status_code == 200:
+                self.rate = (data['rate'])
+                self.From_Coin = From_Coin
+                self.To_Coin = To_Coin
+                self.time = data['time']
+                self.Amount_From = Amount_From
+                self.Amount_To = float(Amount_From) * float(self.rate)
+                return True, None
+            else:
+                return False, str(consult_response.status_code) + data['error']    
+        
+        except requests.exceptions.RequestException as error_str:
+            return False, error_str + url
+    
+    def reset(self):
+        self.From_Coin = self.To_Coin = self.rate = self.Amount_From = self.Amount_To = self.time = ""
+
+    def data_to_dict(self):
+        return {
+            "rate" : self.rate,
+            "time" : self.time,
+            "From_Coin"	: self.From_Coin,
+            "Amount_From" : self.Amount_From,
+            "To_Coin" : self.To_Coin,
+            "Amount_To"	: self.Amount_To
+        }
+
+
 
 
 class DAOSqlite:
