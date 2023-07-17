@@ -1,6 +1,7 @@
 import sqlite3
 import requests
 from cripto_wallet import app
+from datetime import datetime
 
 coin_options = [("option","Select an option"),
          ("EUR","EUR"),
@@ -17,11 +18,12 @@ coin_options = [("option","Select an option"),
 
 class Calculs:
     def __init__(self):
-        self.coinFrom = ""
-        self.coinTo = ""
+        self.From_Coin = ""
+        self.To_Coin = ""
         self.rate = ""
-        self.amountFrom = ""
-        self.amountTo = ""
+        self.Amount_From = ""
+        self.Amount_To = ""
+        self.time = ""
     
     def get_rate(self, From_Coin, To_Coin, Amount_From):
         apikey = app.config.get("COIN_IO_API_KEY")
@@ -33,7 +35,7 @@ class Calculs:
                 self.rate = (data['rate'])
                 self.From_Coin = From_Coin
                 self.To_Coin = To_Coin
-                self.time = data['time']
+                self.time = datetime.utcnow().isoformat()
                 self.Amount_From = Amount_From
                 self.Amount_To = float(Amount_From) * float(self.rate)
                 return True, None
@@ -56,6 +58,17 @@ class Calculs:
             "Amount_To"	: self.Amount_To
         }
 
+    def validate_data(self, Amount_From, From_Coin, To_Coin, Amount_To):
+        time_now = datetime.utcnow().isoformat()
+        dif_time = datetime.fromisoformat(time_now)-datetime.fromisoformat(self.time)
+        if int(dif_time.seconds) // 60 > 10:
+            error = "Time exceeded. Please calcul again the rate"
+            return False, error  
+        elif Amount_From != self.Amount_From or From_Coin != self.From_Coin or To_Coin != self.To_Coin or Amount_To != self.Amount_To:
+            error = "Corrupted transaction data. Please calcul again the rate"
+            return False, error
+        else:
+            return True, None
 
 
 
@@ -114,3 +127,18 @@ class DAOSqlite:
             "To_Coin" : transaction[4],
             "Amount_To"	: transaction[5]
         }
+    
+    def insert_transaction(self, calculs):
+        time_now = datetime.utcnow().isoformat()
+        date = time_now[0:10]
+        time = time_now[11:19]
+        query = """
+        INSERT INTO transactions
+                (Date, Time, From_Coin, Amount_From, To_Coin, Amount_To)
+                VALUES (?,?,?,?,?,?)
+        """
+        conn = sqlite3.connect(self.path)
+        cur = conn.cursor()
+        
+        cur.execute(query, (date, time, calculs.From_Coin, calculs.Amount_From, calculs.To_Coin, calculs.Amount_To))
+        conn.commit()

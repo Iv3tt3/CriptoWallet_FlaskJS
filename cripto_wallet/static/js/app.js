@@ -68,28 +68,33 @@ Used to:
 2) validate amount of each cripto available in wallet*/
 
 function process_coinoptions(data){
-    let the_father1 = document.querySelector("#From_Coin")
-    the_father1.innerHTML = ""
+    if (data.ok) {
+        let the_father1 = document.querySelector("#From_Coin")
+        the_father1.innerHTML = ""
 
-    let the_father2 = document.querySelector("#To_Coin")
-    the_father2.innerHTML = ""
-    
+        let the_father2 = document.querySelector("#To_Coin")
+        the_father2.innerHTML = ""
+        
     let coptions = data.coin_options
-    for (let i=0; i< coptions.length; i++) {
-        let new_option = new Option(coptions[i][1],coptions[i][0])
-        let new_option2 = new Option(coptions[i][1],coptions[i][0])
-        the_father1.appendChild(new_option)
-        the_father2.appendChild(new_option2)
+        for (let i=0; i< coptions.length; i++) {
+            let new_option = new Option(coptions[i][1],coptions[i][0])
+            let new_option2 = new Option(coptions[i][1],coptions[i][0])
+            the_father1.appendChild(new_option)
+            the_father2.appendChild(new_option2)
 
-        if (coptions[i][0] != "option"){
-            wallet_criptos[coptions[i][0]] = 0
+            if (coptions[i][0] != "option"){
+                wallet_criptos[coptions[i][0]] = 0
+            }
         }
-    }
     let transactions = data.data
-    for (let i=0; i< transactions.length; i++) {  
-        wallet_criptos[transactions[i].From_Coin] = wallet_criptos[transactions[i].From_Coin] - transactions[i].Amount_From
-        wallet_criptos[transactions[i].To_Coin] = wallet_criptos[transactions[i].To_Coin] + transactions[i].Amount_To
+        for (let i=0; i< transactions.length; i++) {  
+            wallet_criptos[transactions[i].From_Coin] = wallet_criptos[transactions[i].From_Coin] - transactions[i].Amount_From
+            wallet_criptos[transactions[i].To_Coin] = wallet_criptos[transactions[i].To_Coin] + transactions[i].Amount_To
+        }
+    } else{
+        alert ("Error" + data.data)
     }
+    return data
 }
 
 
@@ -106,13 +111,6 @@ function new_btn_action(event){
 
 function cancel_action(event){
     event.preventDefault()
-    
-    add_invisible_class("#new_transaction_grid")  
-    add_invisible_class("#cancel_btn")
-    
-    remove_inactiveBtn_class("#new_btn")
-    remove_inactiveBtn_class("#submit")
-    
     reset_data()
 }
 
@@ -181,8 +179,15 @@ function display_result(data){
 }
 
 function reset_data(){
+    
+    add_invisible_class("#new_transaction_grid")  
+    add_invisible_class("#cancel_btn")
     add_invisible_class("#results_grid")
     add_invisible_class("#purchase")
+
+    remove_inactiveBtn_class("#new_btn")
+    remove_inactiveBtn_class("#submit")
+    remove_inactiveBtn_class("#order")
 
     let the_father = document.querySelector("#result_rate")
     the_father.innerHTML = ""
@@ -226,11 +231,6 @@ function display_purchase_resume(event){
 
 function execute_purchase(event){
     event.preventDefault()
-    cancel_action(event) //FALTA ACABAR
-}
-/*
-function execute_purchase(event){
-    event.preventDefault()
     let data = { 
         Amount_From: last_calcul_data.Amount_From,
         From_Coin: last_calcul_data.From_Coin,
@@ -247,10 +247,23 @@ function execute_purchase(event){
     }
 
     fetch ("api/v1/insert", options) 
-        .then(convert_to_json)
-        .then(process_insert) 
+        .then(process_response)
+        .then(refresh_display_transactions)
+        .then(reset_data)
         .catch(process_error)
-}*/
+}
+
+function refresh_display_transactions(data){
+    if (data.ok){
+        fetch("/api/v1/transactions")
+            .then(process_response)
+            .then(display_transactions)
+            .then(process_coinoptions)
+            .catch(process_error)
+    } else {
+        alert (data.data)
+    }
+}
 
 window.onload = function () {
 

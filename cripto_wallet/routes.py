@@ -28,6 +28,12 @@ def all_transactions():
             "data": str(e)
         }
         return response, 400
+    except ValueError as e:
+        response = {
+            "ok": False,
+            "data": str(e)
+        }
+        return response, 400
 
 @app.route("/api/v1/rate/<From_Coin>/<To_Coin>/<Amount_From>")
 def get_rate(From_Coin, To_Coin, Amount_From):
@@ -50,4 +56,42 @@ def get_rate(From_Coin, To_Coin, Amount_From):
             "ok": False,
             "data": str(e)
         }
+        return response, 400
+
+@app.route("/api/v1/insert", methods=["POST"])
+def insert_transaction():
+    try:
+        data_validation, error_info = calculs.validate_data(
+            request.json.get("Amount_From"), 
+            request.json.get("From_Coin"),
+            request.json.get("To_Coin"),
+            request.json.get("Amount_To"),
+            )
+        if data_validation:
+            try:
+                dao.insert_transaction(calculs)
+                response = {
+                    "ok": True,
+                    "data": "Purchase order complete"
+                }
+                return response
+
+            except ValueError as e:
+                response = {
+                    "ok": False,
+                    "data": str(e)
+                }
+                return response, 400
+        else:
+            response = {
+                    "ok": False,
+                    "data": error_info
+                }
+            return response, 400
+
+    except ValueError as e:
+        response = {
+                    "ok": False,
+                    "data": str(e)
+                }
         return response, 400
