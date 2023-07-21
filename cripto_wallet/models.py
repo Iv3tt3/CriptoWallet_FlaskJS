@@ -3,8 +3,7 @@ import requests
 from cripto_wallet import app
 from datetime import datetime
 
-coin_options = [("option","Select an option"),
-         ("EUR","EUR"),
+coin_options = [("EUR","EUR"),
          ("BTC","BTC"), 
          ("BNB","BNB"),
          ("ETH","ETH"),
@@ -16,7 +15,7 @@ coin_options = [("option","Select an option"),
          ("MATIC","MATIC")]
 
 
-class Calculs:
+class Calculator:
     def __init__(self):
         self.From_Coin = ""
         self.To_Coin = ""
@@ -43,7 +42,7 @@ class Calculs:
                 return False, str(consult_response.status_code) + data['error']    
         
         except requests.exceptions.RequestException as error_str:
-            return False, error_str + url
+            return False, str(error_str) + str(url)
     
     def reset(self):
         self.From_Coin = self.To_Coin = self.rate = self.Amount_From = self.Amount_To = self.time = ""
@@ -70,12 +69,14 @@ class Calculs:
         else:
             return True, None
 
+calculator = Calculator()
 
 
 class DAOSqlite:
     def __init__(self, data_path):
         self.path = data_path
         self.create_table_init()
+        self.wallet_transactions = []
 
     #Create a db sqlite table if not exist in the path (check path in FLASK_PATH_SQLITE in .env)
     
@@ -114,6 +115,7 @@ class DAOSqlite:
             transaction = self.convert_to_dict(transaction)
             transaction_list.append(transaction)
         conn.close()
+        self.wallet_transactions = transaction_list
         return transaction_list
     
     # Convert a transaction into a dict. Needed for get_all_transactions method
@@ -142,3 +144,38 @@ class DAOSqlite:
         
         cur.execute(query, (date, time, calculs.From_Coin, calculs.Amount_From, calculs.To_Coin, calculs.Amount_To))
         conn.commit()
+
+    def wallet_status(self):
+        wallet_criptos = []
+        wallet_value = 0
+        invested_euros = 0
+        refund_euros = 0
+        for coin_text, coin in coin_options:
+
+            cripto_amount=0
+            cripto_value=0
+
+            for transaction in self.wallet_transactions:
+
+                if coin == "EUR":
+                    if transaction["From_Coin"] == coin:
+                        invested_euros -= transaction["Amount_From"]
+                    if transaction["To_Coin"] == coin:
+                        refund_euros += transaction["Amount_To"]
+            
+                else:
+                    if transaction["From_Coin"] == coin:
+                        cripto_amount -= transaction["Amount_From"]
+                    if transaction["To_Coin"] == coin:
+                        cripto_amount += transaction["Amount_To"]
+            
+            if cripto_amount !=0:
+                calculator.get_rate(coin,"EUR",cripto_amount)
+                cripto_value = calculator.rate * cripto_amount
+                wallet_value += cripto_value
+                wallet_criptos.append((coin, cripto_amount, cripto_value)) 
+        
+        investment_result = invested_euros - refund_euros
+        
+        return wallet_criptos, wallet_value, invested_euros, refund_euros, investment_result
+

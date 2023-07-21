@@ -9,14 +9,8 @@
 </head>
 <body>
     <header>
-        <h1>Cripto Wallet - {{ page }}</h1>
+        <h1>Cripto Wallet</h1>
    </header> 
-   <nav class="container">
-    <div {% if actual_page == "index" %} class="noactive" {% else%} class="navlink"{% endif %} id="navitem1"><a href="/">All transactions</a></div>
-    <div {% if actual_page =="form_new" %} class="noactive" {% else%} class="navlink"{% endif %} id="navitem2"><a href="">New transaction</a></div>
-    <div id="navitem3"></div>
-    <div {% if actual_page =="status" %} class="noactive" {% else%} class="navlink"{% endif %} id="navitem4"><a href="">Wallet Status</a></div>
-</nav>
 <main class="container">
     {% block content %}{% endblock %}
 </main>

@@ -3,35 +3,82 @@
 {% block content%}
 
     <main>
-        <!-- TRANSACTIONS TABLE -->
-        <table> 
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>FROM</th>
-                    <th>Amount (From)</th>
-                    <th>TO</th>
-                    <th>Amount (To)</th>
-                </tr> 
-            </thead>
-            <tbody id="transactions_table"> <!-- id used in JS to display transactions -->
-            </tbody>
-        </table>
 
+        <!-- STATUS SECTION -->
+
+        <div>
+
+            <!-- Status and Close -->
+            <div class="grid_50-25-25">
+                <div></div>
+                <div><a href="#" id="close_btn" role="button" class="invisible">Close</a>
+                </div>
+                <div><a href="#" id="status_btn" role="button">Check Investment Status</a>
+                </div>
+            </div>
+
+            <!-- Status Data -->
+            <div id="statussection" class="invisible">
+                <p style="font-size: 20pt; font-weight: bold;text-align: center;border-bottom: 1px solid black; margin-top: 30pt;">
+                    Investment Status</p>
+                <div id="emptywallet"> <!-- id used in JS to display emtpy wallet -->
+                </div>
+                <div>
+                <table>
+                    <thead>
+                        <tr class="tabletitles">
+                            <th>Coin</th>
+                            <th>Total amount</th>
+                            <th>Current value (in EUR)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="status_table"> <!-- id used in JS to display wallet status table -->
+                    </tbody>
+                </table>
+                </div>
+                <div id="wallet_balance" style="text-align: center;"> <!-- id used in JS to display wallet status results -->
+                </div>
+                <div class=grid_33-33-33>
+                    <div id="invested_euros"></div>
+                    <div id="refund_euros"></div>
+                    <div id="investment_result"></div>
+                </div> 
+            </div>
+
+        </div>
+
+        <div>
+            <!-- TRANSACTIONS TABLE -->
+            <p style="font-size: 20pt; font-weight: bold;text-align: center;border-bottom: 1px solid black;">
+                Wallet Transactions</p>
+            <table> 
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>FROM</th>
+                        <th>Amount (From)</th>
+                        <th>TO</th>
+                        <th>Amount (To)</th>
+                    </tr> 
+                </thead>
+                <tbody id="transactions_table"> <!-- id used in JS to display transactions -->
+                </tbody>
+            </table>
+        </div>
 
         <!-- NEW TRANSACTION SECTION -->
         <div>
 
             <!-- New transactionn and Cancel button -->
-            <div class="grid-container">
+            <div class="grid_50-50" style="margin-top: 50pt;">
                 <div><a href="#" id="new_btn" role="button">New transaction</a>
                 </div>
                 <div><a href="#" id="cancel_btn" role="button" class="invisible">Cancel</a>
                 </div>
             </div>
 
-            <div class="grid-container" style="border:1px solid lightgrey;">
+            <div class="grid_50-50" style="border:1px solid lightgrey;">
 
                 <!-- New transaction form -->
 
@@ -96,10 +143,7 @@
 
         </div>
 
-
-        <!-- STATUS SECTION -->
-
-        
+   
     </main>
 
 {% endblock %}

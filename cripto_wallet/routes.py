@@ -1,11 +1,10 @@
 from cripto_wallet import app
 from flask import render_template, request
-from cripto_wallet.models import DAOSqlite, Calculs, coin_options
+from cripto_wallet.models import DAOSqlite, calculator, coin_options
 import sqlite3
 
 
 dao = DAOSqlite(app.config.get("PATH_SQLITE"))
-calculs = Calculs()
 
 @app.route("/")
 def index():
@@ -38,11 +37,11 @@ def all_transactions():
 @app.route("/api/v1/rate/<From_Coin>/<To_Coin>/<Amount_From>")
 def get_rate(From_Coin, To_Coin, Amount_From):
     try:
-        status, error_info = calculs.get_rate(From_Coin, To_Coin, Amount_From)
+        status, error_info = calculator.get_rate(From_Coin, To_Coin, Amount_From)
         if status:
             response = {
                 "ok": True,
-                "data": calculs.data_to_dict()
+                "data": calculator.data_to_dict()
             }
             return response
         else:
@@ -61,7 +60,7 @@ def get_rate(From_Coin, To_Coin, Amount_From):
 @app.route("/api/v1/insert", methods=["POST"])
 def insert_transaction():
     try:
-        data_validation, error_info = calculs.validate_data(
+        data_validation, error_info = calculator.validate_data(
             request.json.get("Amount_From"), 
             request.json.get("From_Coin"),
             request.json.get("To_Coin"),
@@ -69,12 +68,12 @@ def insert_transaction():
             )
         if data_validation:
             try:
-                dao.insert_transaction(calculs)
+                dao.insert_transaction(calculator)
                 response = {
                     "ok": True,
                     "data": "Purchase order complete"
                 }
-                return response
+                return response, 201
 
             except ValueError as e:
                 response = {
@@ -95,3 +94,21 @@ def insert_transaction():
                     "data": str(e)
                 }
         return response, 400
+    
+@app.route("/api/v1/status")
+def investment_status():
+    wallet_criptos, wallet_value, invested_euros, refund_euros, investment_result = dao.wallet_status()
+
+    data = {
+        "wallet_criptos" : wallet_criptos, 
+        "wallet_value": wallet_value,
+        "invested_euros": invested_euros,
+        "refund_euros": refund_euros, 
+        "investment_result": investment_result
+    }
+
+    response = {
+        "ok": True, 
+        "data": data
+    }
+    return response

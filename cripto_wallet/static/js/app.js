@@ -1,4 +1,4 @@
-var wallet_criptos = {}
+var available_wallet_balance = {}
 var last_calcul_data = ""
 
 // Used more than once:
@@ -76,20 +76,20 @@ function process_coinoptions(data){
         the_father2.innerHTML = ""
         
     let coptions = data.coin_options
+        let new_option = new Option("Select an option","options")
+        let new_option2 = new Option("Select an option","options")
         for (let i=0; i< coptions.length; i++) {
-            let new_option = new Option(coptions[i][1],coptions[i][0])
-            let new_option2 = new Option(coptions[i][1],coptions[i][0])
+            new_option = new Option(coptions[i][1],coptions[i][0])
+            new_option2 = new Option(coptions[i][1],coptions[i][0])
             the_father1.appendChild(new_option)
             the_father2.appendChild(new_option2)
 
-            if (coptions[i][0] != "option"){
-                wallet_criptos[coptions[i][0]] = 0
-            }
+            available_wallet_balance[coptions[i][0]] = 0
         }
     let transactions = data.data
         for (let i=0; i< transactions.length; i++) {  
-            wallet_criptos[transactions[i].From_Coin] = wallet_criptos[transactions[i].From_Coin] - transactions[i].Amount_From
-            wallet_criptos[transactions[i].To_Coin] = wallet_criptos[transactions[i].To_Coin] + transactions[i].Amount_To
+            available_wallet_balance[transactions[i].From_Coin] = available_wallet_balance[transactions[i].From_Coin] - transactions[i].Amount_From
+            available_wallet_balance[transactions[i].To_Coin] = available_wallet_balance[transactions[i].To_Coin] + transactions[i].Amount_To
         }
     } else{
         alert ("Error" + data.data)
@@ -128,12 +128,12 @@ function validate_form(event){
     let From_Coin = document.querySelector("#From_Coin").value
 
     if (From_Coin != "EUR"){
-        if (wallet_criptos[From_Coin] == 0){
+        if (available_wallet_balance[From_Coin] == 0){
             alert("No "+ From_Coin + " in your wallet. Please, check your wallet status")
             return
         }
-        if (wallet_criptos[From_Coin] < Amount_From) {
-            alert("Not enough balance of " + From_Coin + " in your wallet. Your current balance is " + wallet_criptos[From_Coin] + From_Coin)
+        if (available_wallet_balance[From_Coin] < Amount_From) {
+            alert("Not enough balance of " + From_Coin + " in your wallet. Your current balance is " + available_wallet_balance[From_Coin] + From_Coin)
             return
         }
     }
@@ -175,6 +175,9 @@ function display_result(data){
 
         last_calcul_data = data.data
         
+    }
+    else {
+        alert(data.data)
     }
 }
 
@@ -265,6 +268,83 @@ function refresh_display_transactions(data){
     }
 }
 
+function display_status(event){
+    event.preventDefault()
+
+    add_inactiveBtn_class("#status_btn")
+    remove_invisible_class("#close_btn")
+    remove_invisible_class("#statussection")
+
+    fetch("/api/v1/status")
+        .then(process_response)
+        .then(display_investment_results)
+        .catch(process_error)
+
+}
+
+
+function add_p_to_div(fatherId, title, data){
+    let the_father = document.querySelector(fatherId)
+    the_father.innerHTML = ""
+    let the_paragraph = document.createElement("p") 
+    the_paragraph.style.fontWeight = 'bold';
+    if (data<0){
+        the_paragraph.style.color = 'red';
+    }
+    the_paragraph.innerHTML = title + data + "EUR"
+    the_father.appendChild(the_paragraph)
+}
+
+
+function display_investment_results(data){
+
+    if (data.ok){
+        let wallet_criptos = data.data.wallet_criptos
+        if (wallet_criptos.length != 0){
+            let the_father = document.querySelector("#status_table")
+            the_father.innerHTML = ""
+            for (let i=0; i< wallet_criptos.length; i++) {
+                let the_row = document.createElement("tr") 
+                
+                insert_cell_to_row(the_row, wallet_criptos[i][0])
+                insert_cell_to_row(the_row, wallet_criptos[i][1])
+                insert_cell_to_row(the_row, wallet_criptos[i][2])
+                
+                the_father.appendChild(the_row)
+        
+            }
+
+            add_p_to_div("#wallet_balance", "Current Wallet Balance: ", data.data.wallet_value)
+            
+            add_p_to_div("#invested_euros", "Invested Euros: ", data.data.invested_euros)
+            
+            add_p_to_div("#refund_euros", "Refund Euros: ", data.data.refund_euros)
+            
+            add_p_to_div("#investment_result", "Investment Result: ", data.data.investment_result)
+
+    }else{
+        let the_father = document.querySelector("#emptywallet")
+        the_father.innerHTML = ""
+        the_paragraph = document.createElement("p") 
+        the_paragraph.innerHTML = "Your wallet is empty"
+        the_father.appendChild(the_paragraph)
+        } 
+
+    } else{
+        alert ("Error" + data.data)
+    }
+
+}
+
+function close_status(event){
+
+    remove_inactiveBtn_class("#status_btn")
+    add_invisible_class("#close_btn")
+    add_invisible_class("#statussection")
+
+}
+
+
 window.onload = function () {
 
 
@@ -297,5 +377,11 @@ window.onload = function () {
 
     let purchase_btn = document.querySelector("#purchase")
     purchase_btn.addEventListener("click", execute_purchase)
+
+    let status_btn = document.querySelector("#status_btn")
+    status_btn.addEventListener("click", display_status)
+
+    let close_btn = document.querySelector("#close_btn")
+    close_btn.addEventListener("click", close_status)
 
 }
