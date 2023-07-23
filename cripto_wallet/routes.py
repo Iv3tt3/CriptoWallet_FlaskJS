@@ -1,20 +1,27 @@
 from cripto_wallet import app
-from flask import render_template, request
-from cripto_wallet.models import DAOSqlite, calculator, coin_options
+from flask import render_template, request, redirect, url_for
+from cripto_wallet.models import DAOSqlite, calculator
 import sqlite3
-
 
 dao = DAOSqlite(app.config.get("PATH_SQLITE"))
 
 @app.route("/")
 def index():
-    return render_template("index.html",page="Transactions", actual_page="index")
-
+    try:
+        return render_template("index.html")
+    except:
+        return redirect("/fatalerror")
+    
+@app.route("/fatalerror")
+def fatal_error():
+    return render_template("fatalerror.html")
 
 @app.route("/api/v1/transactions")
 def all_transactions():
     try:
         transactions = dao.get_all_transactions()
+
+        coin_options = app.config.get("COIN_OPTIONS_LIST")
         response = {
             "ok": True,
             "data": transactions,
@@ -24,36 +31,29 @@ def all_transactions():
     except sqlite3.Error as e:
         response = {
             "ok": False,
-            "data": str(e)
+            "data": "Database error. Please, contact support\nerror info: " + str(e)
         }
         return response, 400
     except ValueError as e:
         response = {
             "ok": False,
-            "data": str(e)
+            "data": "Please, contact support\nerror info:" + str(e)
         }
         return response, 400
 
 @app.route("/api/v1/rate/<From_Coin>/<To_Coin>/<Amount_From>")
 def get_rate(From_Coin, To_Coin, Amount_From):
-    try:
-        status, error_info = calculator.get_rate(From_Coin, To_Coin, Amount_From)
-        if status:
-            response = {
-                "ok": True,
-                "data": calculator.data_to_dict()
-            }
-            return response
-        else:
-            response = {
-                "ok": False,
-                "data": error_info
-            }
-            return response, 400
-    except ValueError as e:
+    status, data = calculator.get_rate(From_Coin, To_Coin, Amount_From)
+    if status:
+        response = {
+            "ok": True,
+            "data": data
+        }
+        return response
+    else:
         response = {
             "ok": False,
-            "data": str(e)
+            "data": "Calculator is not avaliable at this moment.\nPlease contact support.\n\nError in CoinAPI.io request.\nMore info: " + data
         }
         return response, 400
 
@@ -71,16 +71,17 @@ def insert_transaction():
                 dao.insert_transaction(calculator)
                 response = {
                     "ok": True,
-                    "data": "Purchase order complete"
+                    "data": "Purchase order completed"
                 }
                 return response, 201
-
-            except ValueError as e:
+            
+            except sqlite3.Error as e:
                 response = {
                     "ok": False,
-                    "data": str(e)
+                    "data": "Unexpected error: DB is currently not available.\nPlease contact support\n\nMore info: " + e
                 }
                 return response, 400
+
         else:
             response = {
                     "ok": False,
@@ -91,24 +92,24 @@ def insert_transaction():
     except ValueError as e:
         response = {
                     "ok": False,
-                    "data": str(e)
+                    "data": "Your purchase has NOT been completed.\nPlease contact support\n\nMore info: " + e
                 }
         return response, 400
     
 @app.route("/api/v1/status")
 def investment_status():
-    wallet_criptos, wallet_value, invested_euros, refund_euros, investment_result = dao.wallet_status()
+    status, data = dao.wallet_status()
 
-    data = {
-        "wallet_criptos" : wallet_criptos, 
-        "wallet_value": wallet_value,
-        "invested_euros": invested_euros,
-        "refund_euros": refund_euros, 
-        "investment_result": investment_result
-    }
-
-    response = {
-        "ok": True, 
-        "data": data
-    }
-    return response
+    if status:
+        response = {
+            "ok": True, 
+            "data": data
+        }
+        return response
+    
+    else:
+        response = {
+            "ok": False, 
+            "data": data
+        }
+        return response

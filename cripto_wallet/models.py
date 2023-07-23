@@ -3,17 +3,6 @@ import requests
 from cripto_wallet import app
 from datetime import datetime
 
-coin_options = [("EUR","EUR"),
-         ("BTC","BTC"), 
-         ("BNB","BNB"),
-         ("ETH","ETH"),
-         ("USDT","USDT"),
-         ("XRP","XRP"),
-         ("ADA","ADA"),
-         ("SOL","SOL"),
-         ("DOT","DOT"),
-         ("MATIC","MATIC")]
-
 
 class Calculator:
     def __init__(self):
@@ -31,13 +20,15 @@ class Calculator:
             consult_response = requests.get(url)
             data = consult_response.json() 
             if consult_response.status_code == 200:
+                Amount_To = float(Amount_From) * float(data['rate'])
+                data = self.data_to_dict(From_Coin, To_Coin, Amount_From, Amount_To, data['rate'])
                 self.rate = (data['rate'])
                 self.From_Coin = From_Coin
                 self.To_Coin = To_Coin
                 self.time = datetime.utcnow().isoformat()
                 self.Amount_From = Amount_From
-                self.Amount_To = float(Amount_From) * float(self.rate)
-                return True, None
+                self.Amount_To = Amount_To
+                return True, data
             else:
                 return False, str(consult_response.status_code) + data['error']    
         
@@ -47,29 +38,26 @@ class Calculator:
     def reset(self):
         self.From_Coin = self.To_Coin = self.rate = self.Amount_From = self.Amount_To = self.time = ""
 
-    def data_to_dict(self):
+    def data_to_dict(self, From_Coin, To_Coin, Amount_From, Amount_To, rate):
         return {
-            "rate" : self.rate,
-            "time" : self.time,
-            "From_Coin"	: self.From_Coin,
-            "Amount_From" : self.Amount_From,
-            "To_Coin" : self.To_Coin,
-            "Amount_To"	: self.Amount_To
+            "rate" : rate,
+            "From_Coin"	: From_Coin,
+            "Amount_From" : Amount_From,
+            "To_Coin" : To_Coin,
+            "Amount_To"	: Amount_To
         }
 
     def validate_data(self, Amount_From, From_Coin, To_Coin, Amount_To):
         time_now = datetime.utcnow().isoformat()
         dif_time = datetime.fromisoformat(time_now)-datetime.fromisoformat(self.time)
-        if int(dif_time.seconds) // 60 > 10:
-            error = "Time exceeded. Please calcul again the rate"
+        if int(dif_time.seconds) // 60 > 5:
+            error = "Your purchase has NOT been completed.\n\nTime exceeded. When you create an order you have only 5 MIN to confirm the purchase. Please start again and calcul again the rate, it maybe has changed."
             return False, error  
         elif Amount_From != self.Amount_From or From_Coin != self.From_Coin or To_Coin != self.To_Coin or Amount_To != self.Amount_To:
-            error = "Corrupted transaction data. Please calcul again the rate"
+            error = "Your purchase has NOT been completed.\nPlease start again.\n\nDuring the purchase transaction we detected that the data was corrupted and it was canceled for your safety."
             return False, error
         else:
             return True, None
-
-calculator = Calculator()
 
 
 class DAOSqlite:
@@ -119,6 +107,7 @@ class DAOSqlite:
         return transaction_list
     
     # Convert a transaction into a dict. Needed for get_all_transactions method
+    #FALTA VALIDAR TRANSACCION
 
     def convert_to_dict(self, transaction):
         return {
@@ -146,36 +135,51 @@ class DAOSqlite:
         conn.commit()
 
     def wallet_status(self):
-        wallet_criptos = []
-        wallet_value = 0
-        invested_euros = 0
-        refund_euros = 0
-        for coin_text, coin in coin_options:
+        try:
+            wallet_criptos = []
+            wallet_value = 0
+            invested_euros = 0
+            refund_euros = 0
+            coin_options = app.config.get("COIN_OPTIONS_LIST")
+            for coin_text, coin in coin_options:
 
-            cripto_amount=0
-            cripto_value=0
+                cripto_amount=0
+                cripto_value=0
 
-            for transaction in self.wallet_transactions:
+                for transaction in self.wallet_transactions:
 
-                if coin == "EUR":
-                    if transaction["From_Coin"] == coin:
-                        invested_euros -= transaction["Amount_From"]
-                    if transaction["To_Coin"] == coin:
-                        refund_euros += transaction["Amount_To"]
+                    if coin == "EUR":
+                        if transaction["From_Coin"] == coin:
+                            invested_euros -= transaction["Amount_From"]
+                        if transaction["To_Coin"] == coin:
+                            refund_euros += transaction["Amount_To"]
+                
+                    else:
+                        if transaction["From_Coin"] == coin:
+                            cripto_amount -= transaction["Amount_From"]
+                        if transaction["To_Coin"] == coin:
+                            cripto_amount += transaction["Amount_To"]
+                
+                if cripto_amount !=0:
+                    calculator.get_rate(coin,"EUR",cripto_amount)
+                    cripto_value = calculator.rate * cripto_amount
+                    wallet_value += cripto_value
+                    wallet_criptos.append((coin, cripto_amount, cripto_value)) 
             
-                else:
-                    if transaction["From_Coin"] == coin:
-                        cripto_amount -= transaction["Amount_From"]
-                    if transaction["To_Coin"] == coin:
-                        cripto_amount += transaction["Amount_To"]
-            
-            if cripto_amount !=0:
-                calculator.get_rate(coin,"EUR",cripto_amount)
-                cripto_value = calculator.rate * cripto_amount
-                wallet_value += cripto_value
-                wallet_criptos.append((coin, cripto_amount, cripto_value)) 
-        
-        investment_result = invested_euros - refund_euros
-        
-        return wallet_criptos, wallet_value, invested_euros, refund_euros, investment_result
+            investment_result = refund_euros + invested_euros
 
+            data = {
+                "wallet_criptos" : wallet_criptos, 
+                "wallet_value": wallet_value,
+                "invested_euros": invested_euros,
+                "refund_euros": refund_euros, 
+                "investment_result": investment_result
+            }
+            
+            return True, data
+
+        except:
+            data = "ERROR. Your wallet status is not available. Please, contact support"
+            return False, data
+
+calculator = Calculator()

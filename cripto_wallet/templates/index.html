@@ -8,49 +8,56 @@
 
         <div>
 
-            <!-- Status and Close -->
+            <!-- To open and close section -->
             <div class="grid_50-25-25">
                 <div></div>
-                <div><a href="#" id="close_btn" role="button" class="invisible">Close</a>
+                <div><a href="#" id="close_status_btn" role="button" class="invisible">Close</a> <!-- id used in JS function close_status -->
                 </div>
-                <div><a href="#" id="status_btn" role="button">Check Investment Status</a>
+                <div><a href="#" id="status_btn" role="button">Check Investment Status</a> <!-- id used in JS function display_status -->
                 </div>
             </div>
 
-            <!-- Status Data -->
-            <div id="statussection" class="invisible">
+            <!-- To display status data -->
+            <div id="status_section" class="invisible"> <!-- id used in JS functions close_status and display_status -->
                 <p style="font-size: 20pt; font-weight: bold;text-align: center;border-bottom: 1px solid black; margin-top: 30pt;">
                     Investment Status</p>
-                <div id="emptywallet"> <!-- id used in JS to display emtpy wallet -->
-                </div>
+
                 <div>
-                <table>
-                    <thead>
-                        <tr class="tabletitles">
-                            <th>Coin</th>
-                            <th>Total amount</th>
-                            <th>Current value (in EUR)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="status_table"> <!-- id used in JS to display wallet status table -->
-                    </tbody>
-                </table>
+                    <table>
+                        <thead>
+                            <tr class="tabletitles">
+                                <th>Coin</th>
+                                <th>Total amount</th>
+                                <th>Current value (in EUR)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="status_table"> <!-- id used in JS function display_status_data -->
+                        </tbody>
+                    </table>
+
+                    <div id="status_info_msgs"> <!-- id used in JS function display_status_data -->
+                    </div>
+
+                    <div id="status_results">
+                        <div id="wallet_value" style="text-align: center;"> <!-- id used in JS function display_status_data -->
+                        </div>
+                        <div id=grid_33-33-33>
+                            <div id="invested_euros"></div> <!-- id used in JS function display_status_data -->
+                            <div id="refund_euros"></div> <!-- id used in JS function display_status_data -->
+                            <div id="investment_result"></div> <!-- id used in JS function display_status_data -->
+                        </div> 
+                    </div>
+                    
                 </div>
-                <div id="wallet_balance" style="text-align: center;"> <!-- id used in JS to display wallet status results -->
-                </div>
-                <div class=grid_33-33-33>
-                    <div id="invested_euros"></div>
-                    <div id="refund_euros"></div>
-                    <div id="investment_result"></div>
-                </div> 
             </div>
 
         </div>
 
-        <div>
-            <!-- TRANSACTIONS TABLE -->
+        <!-- TRANSACTIONS TABLE -->
+        <div> 
             <p style="font-size: 20pt; font-weight: bold;text-align: center;border-bottom: 1px solid black;">
                 Wallet Transactions</p>
+            
             <table> 
                 <thead>
                     <tr>
@@ -62,77 +69,103 @@
                         <th>Amount (To)</th>
                     </tr> 
                 </thead>
-                <tbody id="transactions_table"> <!-- id used in JS to display transactions -->
+                <tbody id="transactions_bodytable"> <!-- id used in JS function display_transactions -->
                 </tbody>
             </table>
+
+            <div id="transaction_info_msgs"> <!-- id used in JS function display_transactions -->
+            </div>
+
         </div>
 
         <!-- NEW TRANSACTION SECTION -->
         <div>
 
-            <!-- New transactionn and Cancel button -->
+            <!-- Buttons to open and close section -->
             <div class="grid_50-50" style="margin-top: 50pt;">
-                <div><a href="#" id="new_btn" role="button">New transaction</a>
+                <div><a href="#" id="new_btn" role="button">New transaction</a> <!-- id used in JS function new_btn_action and reset_data -->
                 </div>
-                <div><a href="#" id="cancel_btn" role="button" class="invisible">Cancel</a>
+                <div><a href="#" id="cancel_btn" role="button" class="invisible">Cancel</a> <!-- id used in JS function new_btn_action and reset_data -->
                 </div>
             </div>
 
+            <!-- New transaction form and rate results grid -->
+
             <div class="grid_50-50" style="border:1px solid lightgrey;">
 
-                <!-- New transaction form -->
+                <!-- The form -->
 
-                <div class="invisible" id="new_transaction_grid"> 
+                <div class="invisible" id="new_transaction_grid"> <!-- id used in JS function new_btn_action and reset_data -->
                     <div class="grid-item">
                         <p style="font-size: 20pt;font-weight: bold;text-align: center;">Calculator</p>
                         <form >
                             <label for="Amount_From">Amount:</label>
                             <span class="description"><em>Amount you want to invest</em></span>
-                            <input type="number" name="Amount_From" id="Amount_From" placeholder="0.00"></br>
+                            <input type="number" name="Amount_From" id="Amount_From" placeholder="0.00"></br> <!-- id used in JS function validate_form -->
                             
                             <label for="From_Coin">From:</label>
                             <span class="description"><em>Coin you want to sell</em></span>
-                            <select name="From_Coin" id="From_Coin" placeholder="From"> 
+                            <select name="From_Coin" id="From_Coin" placeholder="From">  <!-- id used in JS function validate_form -->
                             </select><br>    
 
                             <label for="To_Coin">To:</label>
                             <span class="description"><em>Coin you want to buy</em></span>
-                            <select name="To_Coin" id="To_Coin" placeholder="To">
+                            <select name="To_Coin" id="To_Coin" placeholder="To"> <!-- id used in JS function validate_form -->
                             </select><br>
 
-                            <input type="submit" name="submit" id="submit" value="Calcular">
+                            <input type="submit" name="submit" id="submit" value="Calcular"> <!-- id used in JS function reset_data and display_purchase_resume--> 
                     </div>
                 </div>
 
-                <!-- Results & Create an order -->
+                <!-- The rate results & create an order -->
                 
-                <div class="invisible" id="results_grid">
+                <div class="invisible" id="results_grid"> <!-- id used in JS function display_results and reset_data -->
                     <div class="grid-item" style="background-color: rgba(246, 246, 246, 0.743);border-radius: 10pt;">
                         
-                        <div id="results">
+                        <!-- To display rate results -->
+
+                        <div>
+
                             <p style="font-size: 20pt;font-weight: bold;text-align: center;">Result</p>
+                            
                             <p style="margin-bottom: 0;"><b>Current rate:</b></p>
-                            <div id="result_rate">
+                            <div id="result_rate"> <!-- id used in JS function display_results and reset_data -->
                             </div>
-                            <p style="margin-bottom: 0;"><b>Amount you will get:</b></p>
-                            <div id="result_amount">
+
+                            <p style="margin-bottom: 0;"><b>If you invest:</b></p>
+                            <div id="invest_amount"> <!-- id used in JS function display_results and reset_data -->
                             </div>
-                            <input type="button" name="order" id="order" value="Create an order">
+                            
+                            <p style="margin-bottom: 0;"><b>The amount you will get is:</b></p>
+                            <div id="result_amount"> <!-- id used in JS function display_results and reset_data -->
+                            </div>
+
+                            <input type="button" name="order" id="order" value="Create an order"> <!-- id used in JS function display_purchase_resume and reset_data -->
+                        
                         </div>
+
+                        <!-- To display crate an order -->
 
                         <div class="invisible" id="purchase">
                             <div style="background-color: #23695c;padding-top: 20pt;border-radius: 10pt;margin-top: 10pt;">
+                                
                                 <p style="font-size: 20pt;font-weight: bold;text-align: center;color: white;">Ready to Purchase?</p>
+
                                 <div style="border: 5pt solid #23695c;border-radius: 10pt; background-color: white ;padding: 20pt;">
                                     <p style="font-weight: bold;text-align: center; background-color: rgba(246, 246, 246, 0.743);">Order resume:</p>
+                                    
                                     <div style="padding-left: 20pt;text-align: left;">
                                         <p><b>From </b><em>(investing amount)</em></p>
-                                        <div id="purchase_from"></div>
+                                        <div id="purchase_from"></div> <!-- id used in JS function display_purchase_resume and reset_data -->
+
                                         <p><b>To </b><em>(purchasing amount)</em></p>
-                                        <div id="purchase_to"></div>
+                                        <div id="purchase_to"></div> <!-- id used in JS function display_purchase_resume and reset_data -->
+
                                     </div>
-                                    <input type="button" name="purchase" id="purchase" value="Purchase">
+                                    <input type="button" name="purchase" id="purchase" value="Purchase"> <!-- id used in JS function execute_purchase and reset_data -->
+                                
                                 </div>
+
                             </div>
                         </div>
 

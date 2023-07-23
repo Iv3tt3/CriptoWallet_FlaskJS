@@ -16,35 +16,6 @@ footer p{
     text-align:center;
 }
 
-/* Estilo para navegacion */
-
-#navitem1, #navitem2, #navitem4 {
-    margin-top: 20pt;
-    width: 20%;
-    text-align: center;
-  }
-
-#navitem3 {
-    margin-top: 20pt;
-    width: 40%;
-  }
-
-.navlink:hover { 
-    background-color:  #3796854f;;
-    background-size: 100pt;
-    color: white;
-  }
-
-/* Estilos para el enlace inactivo */
-.noactive {
-    --primary: grey;
-    cursor: not-allowed;
-    pointer-events: none;
-    background-color: rgba(211, 211, 211, 0.287);
-    border-bottom: 1px solid black;
-  }
-
-
 /* Estilos para botones */
 
 #new_btn{
@@ -57,7 +28,7 @@ footer p{
 #status_btn{
   width: 100%;
 }
-#close_btn{
+#close_status_btn{
   width: 100%;
 }
 
@@ -69,7 +40,14 @@ footer p{
   background-color: rgba(211, 211, 211, 0.287);
 }
 
-/* Estilos para el new_form grid */
+/* clase invisible */
+
+.invisible{
+  display: none;
+}
+
+/* GRIDS */
+
 .grid_50-50{
   display: grid;
   grid-template-columns: 50% 50%;
@@ -82,34 +60,30 @@ footer p{
   border-radius: 10pt
 }
 
+.grid_50-25-25{
+  display: grid;
+  grid-template-columns: 50% 25% 25%;
+}
+#grid_33-33-33{
+  display: grid;
+  grid-template-columns: 33% 33% auto;
+}
+
 /* Estilos para el new transaction form */
 .description {
   color:grey;
   font-size: 90%;
 }
 
-/* clase invisible */
 
-.invisible{
-  display: none;
-}
+/* Estilos para status section */
 
-#statussection{
+#status_section{
   margin-top: 20pt;
   margin-bottom: 50pt;
   padding: 20pt;
   background-color: rgba(246, 246, 246, 0.743);
   border-radius: 10pt
-}
-
-.grid_50-25-25{
-  display: grid;
-  grid-template-columns: 50% 25% 25%;
-}
-
-.grid_33-33-33{
-  display: grid;
-  grid-template-columns: 33% 33% auto;
 }
 
 #invested_euros{
@@ -134,4 +108,16 @@ footer p{
   text-align: center;
   padding-top: 30pt;
 
+}
+
+/* Estilo para empty wallet: id notransactions and id nostatus  */
+
+.information_message{
+  color: darkgray;
+  text-align:center;
+  font-size: 20pt;
+  background-color: rgba(211, 211, 211, 0.33);
+  padding: 50pt;
+  border-radius: 10pt;
+  font-weight: bold;
 }
