@@ -86,7 +86,7 @@ footer p{
   border-radius: 10pt
 }
 
-#invested_euros{
+#item1_grid33{
   border: 1px solid grey;
   background-color: white;
   border-radius: 5pt 0pt 0pt 5pt;
@@ -94,14 +94,14 @@ footer p{
   padding-top: 30pt;
 }
 
-#refund_euros{
+#item2_grid33{
   border: 1px solid grey;
   background-color: white;
   text-align: center;
   padding-top: 30pt;
 }
 
-#investment_result{
+#item3_grid33{
   border: 1px solid grey;
   background-color: white;
   border-radius: 0pt 5pt 5pt 0pt;
