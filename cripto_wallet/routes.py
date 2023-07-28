@@ -1,5 +1,5 @@
 from cripto_wallet import app
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect
 from cripto_wallet.models import dao, calculator
 import sqlite3
 
