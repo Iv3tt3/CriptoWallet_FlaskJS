@@ -195,6 +195,11 @@ function validate_form(event){
 
     let From_Coin = document.querySelector("#From_Coin").value
 
+    if (From_Coin == "option"){
+        alert("Please, select an option in FROM")
+        return
+    }
+
     if (From_Coin != "EUR"){
 
         let amount = wallet_balance[From_Coin][1] - wallet_balance[From_Coin][0]
@@ -209,20 +214,15 @@ function validate_form(event){
         }
     }
 
-    if (From_Coin == "option"){
-        alert("Please, select an option in FROM")
-        return
-    }
-
     let To_Coin = document.querySelector("#To_Coin").value
-
-    if (To_Coin == From_Coin) {
-        alert("Please, select a different coin or cripto in TO than in FROM")
-        return
-    }
 
     if (To_Coin == "option"){
         alert("Please, select an option in TO")
+        return
+    }
+
+    if (To_Coin == From_Coin) {
+        alert("Please, select a different coin or cripto in TO than in FROM")
         return
     }
 
